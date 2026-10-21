@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabertooth Tiger Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Базові налаштування та фон */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-image: url('https://i.postimg.cc/KYwywSgC/fon.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-color: #1a1a24; /* Запасний колір */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Контейнер для повзунка */
+        .roblox-slider-container {
+            position: relative;
+            width: 100%;
+            height: 48px;
+            background-color: #4a5c39; /* Темно-оливковий фон */
+            border: 4px solid black;
+            border-radius: 8px;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.6);
+        }
+
+        /* Сам повзунок */
+        .roblox-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            outline: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+        }
+
+        /* Повзунок для Chrome/Safari */
+        .roblox-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 44px;
+            height: 52px;
+            background: linear-gradient(to bottom, #a3ff00, #5cc900);
+            border: 4px solid black;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: inset 0 8px 0 rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.3);
+            margin-top: -6px; /* Вирівнювання по центру */
+        }
+
+        /* Повзунок для Firefox */
+        .roblox-slider::-moz-range-thumb {
+            width: 44px;
+            height: 52px;
+            background: linear-gradient(to bottom, #a3ff00, #5cc900);
+            border: 4px solid black;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: inset 0 8px 0 rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Зелене поле введення ваги */
+        .roblox-input-green {
+            background: linear-gradient(to bottom, #a3ff00, #5cc900);
+            border: 4px solid black;
+            border-radius: 8px;
+            color: white;
+            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0px 3px 0 #000;
+            box-shadow: inset 0 6px 0 rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.3);
+            font-weight: 900;
+            text-align: center;
+            outline: none;
+        }
+        
+        /* Нейтральне поле введення (НЕ ЗЕЛЕНЕ) для нікнейму */
+        .roblox-input-neutral {
+            background: linear-gradient(to bottom, #f3f4f6, #d1d5db);
+            border: 4px solid black;
+            border-radius: 8px;
+            color: #111827; /* Темний текст */
+            box-shadow: inset 0 6px 0 rgba(255,255,255,0.8), 0 4px 0 rgba(0,0,0,0.3);
+            font-weight: 900;
+            text-align: center;
+            outline: none;
+        }
+
+        .roblox-input-green:focus, .roblox-input-neutral:focus {
+            filter: brightness(1.1);
+        }
+
+        /* Приховати стрілки в number input */
+        .roblox-input-green::-webkit-inner-spin-button, 
+        .roblox-input-green::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        /* Загальні стилі кнопок */
+        .roblox-btn {
+            border: 4px solid black;
+            border-radius: 8px;
+            color: white;
+            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0px 3px 0 #000;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.1s;
+        }
+
+        .roblox-btn:active {
+            transform: translateY(4px) scale(0.98);
+        }
+        
+        .roblox-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Синя кнопка (Reset, Confirm) */
+        .roblox-btn-blue {
+            background: linear-gradient(to bottom, #00d2ff, #0088ff);
+            box-shadow: inset 0 6px 0 rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.3);
+        }
+
+        /* Червона кнопка (Claim) */
+        .roblox-btn-red {
+            background: linear-gradient(to bottom, #ff6b6b, #cc0000);
+            box-shadow: inset 0 6px 0 rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.3);
+        }
+
+        /* Сіра кнопка (Cancel) */
+        .roblox-btn-gray {
+            background: linear-gradient(to bottom, #9ca3af, #4b5563);
+            box-shadow: inset 0 6px 0 rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.3);
+        }
+
+        /* Напівпрозора скляна панель */
+        .glass-panel {
+            background: rgba(30, 30, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        
+        /* Модальне вікно (фон) */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Темно-синій/сірий фон для модального вікна (НЕ ЗЕЛЕНИЙ) */
+            background: linear-gradient(135deg, #1e293b, #0f172a); 
+            border: 4px solid #334155;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="text-white flex items-center justify-center p-4">
+    
+    <!-- Головний контейнер -->
+    <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 md:p-10 flex flex-col items-center gap-6 mt-6 mb-6 relative z-10">
+        
+        <!-- Заголовок-картинка (Адаптивна) -->
+        <div class="w-full max-w-[400px] flex justify-center mt-2">
+            <img 
+                src="https://i.postimg.cc/PJKVGYF2/magnific-sabertooth-6174.png" 
+                alt="Sabertooth Tiger Title" 
+                class="w-full h-auto drop-shadow-[0_8px_8px_rgba(0,0,0,0.8)]"
+            >
+        </div>
+
+        <!-- Зображення питомця -->
+        <div class="relative w-56 h-56 md:w-72 md:h-72 flex items-center justify-center">
+            <!-- Жовте світіння на фоні -->
+            <div class="absolute inset-0 bg-yellow-500/20 blur-3xl rounded-full scale-75"></div>
+            <img 
+                src="https://i.postimg.cc/XYjY3b1J/Tiger.webp" 
+                alt="Sabertooth Tiger" 
+                class="w-full h-full object-contain filter drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)] z-10 hover:scale-105 transition-transform duration-300"
+            >
+        </div>
+
+        <!-- Відображення Ваги та Ціни -->
+        <div class="w-full flex flex-col md:flex-row justify-between gap-4 mt-2">
+            <!-- Блок ваги -->
+            <div class="flex-1 bg-black/40 rounded-xl p-4 flex flex-col items-center justify-center border-2 border-gray-700 min-w-0">
+                <span class="text-gray-400 text-sm md:text-base font-bold uppercase tracking-wider mb-1 text-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Current Weight</span>
+                <div class="flex items-baseline gap-1 flex-wrap justify-center text-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                    <span id="displayWeight" class="font-black text-white break-all text-center leading-none" style="font-size: clamp(2rem, 5vw, 3rem);">10</span>
+                    <span class="text-xl md:text-2xl font-bold text-gray-300">kg</span>
+                </div>
+            </div>
+            
+            <!-- Блок ціни -->
+            <div class="flex-1 bg-black/40 rounded-xl p-4 flex flex-col items-center justify-center border-2 border-gray-700 min-w-0">
+                <span class="text-gray-400 text-sm md:text-base font-bold uppercase tracking-wider mb-1 text-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Current Value</span>
+                <div class="flex items-center gap-2 flex-wrap justify-center text-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                    <span id="displayValue" class="font-black text-[#4CAF50] break-all text-center leading-none" style="font-size: clamp(2rem, 5vw, 3rem);">500</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель управління (Повзунок, інпут, кнопки) -->
+        <div class="w-full bg-black/50 rounded-2xl p-5 md:p-6 flex flex-col gap-6 border-2 border-gray-700">
+            
+            <!-- Повзунок -->
+            <div class="w-full">
+                <div class="flex justify-between text-gray-400 text-sm font-bold mb-2 text-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                    <span id="minWeightLabel">Min: 10 kg</span>
+                    <span id="maxWeightLabel">Max: 1000 kg</span>
+                </div>
+                <div class="roblox-slider-container">
+                    <input type="range" id="weightSlider" min="10" max="1000" value="10" class="roblox-slider">
+                </div>
+            </div>
+
+            <!-- Ручне введення та кнопки -->
+            <div class="flex flex-col gap-4">
+                <div class="w-full flex flex-col gap-2">
+                    <label for="weightInput" class="block text-gray-400 text-sm font-bold uppercase tracking-wider text-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Set Weight Manually:</label>
+                    <input type="number" id="weightInput" placeholder="Enter weight..." class="roblox-input-green w-full px-4 py-3 text-2xl">
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4 w-full mt-2">
+                    <!-- Reset Button -->
+                    <button id="resetBtn" class="roblox-btn roblox-btn-blue px-6 py-3 text-xl flex-1 h-[60px] uppercase tracking-wider">
+                        Reset
+                    </button>
+                    <!-- Claim Button -->
+                    <button id="claimBtn" class="roblox-btn roblox-btn-red px-6 py-3 text-xl flex-1 h-[60px] uppercase tracking-wider">
+                        Claim
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Базова інформація -->
+            <div class="text-center text-gray-500 text-xs mt-2 font-semibold bg-black/30 py-2 rounded-lg border border-gray-700">
+                Base Weight: <span id="baseWeightDisplay" class="text-gray-300">10</span> kg &nbsp;|&nbsp; Base Price: <span id="basePriceDisplay" class="text-gray-300">500</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно (НЕ ЗЕЛЕНЕ) -->
+    <div id="claimModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-box w-full max-w-md rounded-2xl p-6 md:p-8 flex flex-col items-center gap-6">
+            <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-widest text-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center">
+                Claim Pet
+            </h2>
+            <p class="text-gray-300 text-center font-bold">Enter your nickname to claim this Sabertooth Tiger!</p>
+            
+            <input type="text" id="nicknameInput" placeholder="Username" class="roblox-input-neutral w-full px-4 py-4 text-xl">
+            
+            <div class="flex gap-4 w-full mt-4">
+                <button id="cancelModalBtn" class="roblox-btn roblox-btn-gray flex-1 py-3 text-lg uppercase tracking-wider">
+                    Cancel
+                </button>
+                <button id="confirmClaimBtn" class="roblox-btn roblox-btn-blue flex-1 py-3 text-lg uppercase tracking-wider">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Логіка Калькулятора -->
+    <script>
+        // ==========================================
+        // НАЛАШТУВАННЯ
+        // ==========================================
+        const CONFIG = {
+            baseWeight: 10,     
+            maxWeight: 1000,    
+            basePrice: 500,
+            pricePerKg: 50      
+        };
+
+        // ==========================================
+        // ФОРМУЛА РОЗРАХУНКУ ЦІНИ
+        // ==========================================
+        function calculatePrice(currentWeight) {
+            // Формула: 50 за кожен кг вище базового (10)
+            const extraWeight = Math.max(0, currentWeight - CONFIG.baseWeight);
+            return CONFIG.basePrice + (extraWeight * CONFIG.pricePerKg);
+        }
+
+        // ==========================================
+        // РОБОТА З ІНТЕРФЕЙСОМ
+        // ==========================================
+        const elements = {
+            slider: document.getElementById('weightSlider'),
+            input: document.getElementById('weightInput'),
+            displayWeight: document.getElementById('displayWeight'),
+            displayValue: document.getElementById('displayValue'),
+            resetBtn: document.getElementById('resetBtn'),
+            claimBtn: document.getElementById('claimBtn'),
+            minWeightLabel: document.getElementById('minWeightLabel'),
+            maxWeightLabel: document.getElementById('maxWeightLabel'),
+            baseWeightDisplay: document.getElementById('baseWeightDisplay'),
+            basePriceDisplay: document.getElementById('basePriceDisplay'),
+            
+            // Modal elements
+            modal: document.getElementById('claimModal'),
+            nicknameInput: document.getElementById('nicknameInput'),
+            cancelModalBtn: document.getElementById('cancelModalBtn'),
+            confirmClaimBtn: document.getElementById('confirmClaimBtn')
+        };
+
+        // Форматування чисел (10 000)
+        function formatNumber(num) {
+            return num.toLocaleString('en-US').replace(/,/g, ' ');
+        }
+
+        // Ініціалізація
+        function init() {
+            elements.slider.min = CONFIG.baseWeight;
+            elements.slider.max = CONFIG.maxWeight;
+            elements.input.min = CONFIG.baseWeight;
+            
+            elements.minWeightLabel.textContent = `Min: ${formatNumber(CONFIG.baseWeight)} kg`;
+            elements.maxWeightLabel.textContent = `Max: ${formatNumber(CONFIG.maxWeight)} kg`;
+            elements.baseWeightDisplay.textContent = formatNumber(CONFIG.baseWeight);
+            elements.basePriceDisplay.textContent = formatNumber(CONFIG.basePrice);
+
+            updateUI(CONFIG.baseWeight);
+        }
+
+        // Оновлення UI
+        function updateUI(weightStr) {
+            let weight = parseInt(weightStr);
+            if (isNaN(weight)) weight = CONFIG.baseWeight;
+
+            const price = calculatePrice(weight);
+
+            elements.displayWeight.textContent = formatNumber(weight);
+            elements.displayValue.textContent = formatNumber(price);
+            
+            elements.slider.value = Math.min(weight, CONFIG.maxWeight);
+            
+            if (document.activeElement !== elements.input) {
+                elements.input.value = weight;
+            }
+        }
+
+        // --- ОБРОБНИКИ ПОДІЙ ---
+
+        elements.slider.addEventListener('input', (e) => {
+            updateUI(e.target.value);
+            elements.input.value = e.target.value; 
+        });
+
+        elements.input.addEventListener('input', (e) => {
+            if(e.target.value !== "") {
+                updateUI(e.target.value);
+            }
+        });
+
+        elements.input.addEventListener('blur', (e) => {
+            let val = parseInt(e.target.value);
+            if (isNaN(val) || val < CONFIG.baseWeight) {
+                elements.input.value = CONFIG.baseWeight;
+                updateUI(CONFIG.baseWeight);
+            }
+        });
+
+        elements.resetBtn.addEventListener('click', () => {
+            elements.input.value = CONFIG.baseWeight;
+            updateUI(CONFIG.baseWeight);
+        });
+
+        // --- ЛОГІКА МОДАЛЬНОГО ВІКНА ---
+        function openModal() {
+            elements.modal.classList.add('active');
+            elements.nicknameInput.value = ''; // Очистити поле
+            setTimeout(() => elements.nicknameInput.focus(), 100);
+        }
+
+        function closeModal() {
+            elements.modal.classList.remove('active');
+        }
+
+        elements.claimBtn.addEventListener('click', openModal);
+        
+        elements.cancelModalBtn.addEventListener('click', closeModal);
+        
+        // Закриття по кліку на задній фон
+        elements.modal.addEventListener('click', (e) => {
+            if(e.target === elements.modal) {
+                closeModal();
+            }
+        });
+
+        elements.confirmClaimBtn.addEventListener('click', () => {
+            const nickname = elements.nicknameInput.value.trim();
+            if (nickname) {
+                // Тут можна додати логіку відправки даних
+                closeModal();
+            } else {
+                // Якщо поле пусте, можна додати анімацію помилки
+                elements.nicknameInput.style.borderColor = "#ef4444";
+                setTimeout(() => elements.nicknameInput.style.borderColor = "black", 1000);
+            }
+        });
+
+        // Запуск додатку
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
